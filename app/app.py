@@ -130,26 +130,56 @@ class tkinterWindow:
 	# Critical Path Algorithm method 
 	def draw_critical_path(self,G,pos,start,end,weight='weight'):
 		
-		path_length = []
-		paths = nx.all_simple_paths(G, start,end)
-		for path in paths:
-			total_length = 0
-			for i in range(len(path)-1):
-				d={}
-				source, target = path[i], path[i+1]
-				edge = G[source][target]
-				length = edge['weight']
-				total_length += length
-			d['path']=path
-			d['total_length']=total_length
-			path_length.append(d)
-		data = max(path_length, key=lambda pl: pl['total_length'])
-		path = data['path']
-		length = data['total_length']
-		if self.ResultchildFrame != None:
-			self.ResultchildFrame.destroy()
-		self.SelectResultFrame()
-		print length ,path
+		try:
+			path_length = []
+			paths = nx.all_simple_paths(G, start,end)
+			if not list(paths):
+				if self.ResultchildFrame != None:
+					self.ResultchildFrame.destroy()
+				self.ResultSubplot.clear()
+				self.ResultSubplot.axis('off')
+				self.ResultCanvas.draw()
+				tkMessageBox.showerror("Path", "No Path is Connected")
+			else:
+				paths = nx.all_simple_paths(G, start,end)
+				for path in paths:
+					total_length = 0
+					for i in range(len(path)-1):
+						d={}
+						source, target = path[i], path[i+1]
+						edge = G[source][target]
+						length = edge['weight']
+						total_length += length
+					d['path']=path
+					d['total_length']=total_length
+					path_length.append(d)
+				data = max(path_length, key=lambda pl: pl['total_length'])
+				path = data['path']
+				length = data['total_length']
+
+				node_colors = self.node_colors(G,path)
+				# edges_colors = self.edges_colors(G, path)
+				path_edges = zip(path,path[1:])
+				nx.draw_networkx(G, pos=pos, node_color=node_colors,ax=self.ResultSubplot)
+				nx.draw_networkx_edges(G,pos=pos,edgelist=path_edges,edge_color='g',width=3,ax=self.ResultSubplot)
+				nx.draw_networkx_edge_labels(G,pos=pos, edge_labels=self.edge_labels,ax=self.ResultSubplot,font_color='r')
+				self.ResultSubplot.plot(0,0,'-g', label='Path')
+				self.ResultSubplot.legend(loc='upper right')
+				self.ResultCanvas.draw()
+				self.resultPath = ', '.join(str(x) for x in path) 
+				self.resultLength = length
+				if self.ResultchildFrame != None:
+					self.ResultchildFrame.destroy()
+				self.SelectResultFrame()
+
+				
+		except nx.NetworkXNoPath:
+			if self.ResultchildFrame != None:
+				self.ResultchildFrame.destroy()
+			self.ResultSubplot.clear()
+			self.ResultSubplot.axis('off')
+			self.ResultCanvas.draw()
+			tkMessageBox.showerror("Path", "No Path is Connected")
 
 	def maximum_flow_path(self):
 		print 'hello'
