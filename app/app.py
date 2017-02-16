@@ -95,7 +95,7 @@ class tkinterWindow:
 		elif self.Algorithmname == 'Critical Path':
 			self.draw_critical_path(self.G,self.pos,self.startnodevalue,self.endnodevalue)
 		elif self.Algorithmname == 'Maximum Flow':
-			print self.Algorithmname
+			self.maximum_flow_path(self.G,self.pos,self.startnodevalue,self.endnodevalue)
 
 	# Shortest Path Algorithm method
 	def draw_shortest_path(self,G,pos,start,end):
@@ -181,7 +181,7 @@ class tkinterWindow:
 			self.ResultCanvas.draw()
 			tkMessageBox.showerror("Path", "No Path is Connected")
 
-	def maximum_flow_path(self):
+	def maximum_flow_path(self,G,pos,start,end):
 		print 'hello'
 
 
@@ -195,25 +195,33 @@ class tkinterWindow:
 	
 	# Random traffic matrix using numpy method
 	def RandomMatrix(self):
-		matrix = np.random.binomial(4, 0.1, (6, 6))
+		matrix = np.random.binomial(1, 0.2, (5, 5))
 		return matrix
 
 	#  Random graph gentrate using networkx method
 	def RandomGraph(self):
 		matrix = self.RandomMatrix()
+
+		# Draw directed graph
 		self.G = nx.DiGraph(matrix)
+
+		# Remove self node loops
+		self.G.remove_edges_from(self.G.selfloop_edges())
 		
-		# capacity generation for traffic matrix 
+		# weight generation for traffic matrix 
 		weights = np.random.random_integers(low=10, high=30, size=len(self.G.edges()))
+		# capacity generation for traffic matrix 
+		capacity = np.random.random_integers(low=1, high=10, size=len(self.G.edges()))
 		
 		for i, (n1, n2) in enumerate(self.G.edges()):
 			self.G[n1][n2]['weight'] = weights[i]
+			self.G[n1][n2]['capacity'] = capacity[i]
 
 		# genrate circular network using networkx
 		self.pos=nx.circular_layout(self.G)
 
 		# assign edges capacity label in networkx graph
-		self.edge_labels = {(n1,n2): self.G[n1][n2]['weight'] for (n1,n2) in self.G.edges()}
+		self.edge_labels = {(n1,n2): 'w{} c{}'.format(self.G[n1][n2]['weight'],self.G[n1][n2]['capacity'])  for (n1,n2) in self.G.edges()}
 		# Draw networkx graph on matplotlib 
 		nx.draw_networkx(self.G,pos=self.pos,ax=self.subplot)
 		# assign label in networkx graph
