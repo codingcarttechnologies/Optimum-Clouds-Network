@@ -92,8 +92,8 @@ class tkinterWindow:
 		self.ResultCanvas.draw()
 		if self.Algorithmname == 'Shortest Path':
 			self.draw_shortest_path(self.G,self.pos,self.startnodevalue,self.endnodevalue)
-		elif self.Algorithmname == 'Critical Path':
-			self.draw_critical_path(self.G,self.pos,self.startnodevalue,self.endnodevalue)
+		elif self.Algorithmname == 'Longest Path':
+			self.draw_longest_path(self.G,self.pos,self.startnodevalue,self.endnodevalue)
 		elif self.Algorithmname == 'Maximum Flow':
 			self.maximum_flow_path(self.G,self.pos,self.startnodevalue,self.endnodevalue)
 
@@ -127,8 +127,8 @@ class tkinterWindow:
 			self.ResultCanvas.draw()
 			tkMessageBox.showerror("Path", "No Path is Connected")
 	
-	# Critical Path Algorithm method 
-	def draw_critical_path(self,G,pos,start,end,weight='weight'):
+	# Longest Path Algorithm method 
+	def draw_longest_path(self,G,pos,start,end,weight='weight'):
 		try:
 			path_length = []
 			paths = nx.all_simple_paths(G, start,end)
@@ -351,7 +351,7 @@ class tkinterWindow:
 
 		variable = Tk.StringVar(childFrame)
 		variable.set("--Select--")
-		OptionAlgo = Tk.OptionMenu(childFrame,variable,"Shortest Path", "Critical Path", "Maximum Flow", command=self.selectAlgorithm)
+		OptionAlgo = Tk.OptionMenu(childFrame,variable,"Shortest Path", "Longest Path", "Maximum Flow", command=self.selectAlgorithm)
 		OptionAlgo.grid(row=2,column=1,columnspan=2,padx=5, pady=5)
 
 
